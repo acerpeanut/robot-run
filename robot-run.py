@@ -14,8 +14,9 @@ BACK = 3
 ''' distance of fuzzy '''
 NEAR = 1
 MID = 2
-FAR = 4
-BUMP = 8
+MIDFAR = 4
+FAR = 8
+BUMP = 16
 
 Radius = 15
 StepAng = 0.1
@@ -58,7 +59,11 @@ class enviro:
 				x1 = math.cos(self.angle) * i + self.x
 				''' the after translated point '''
 				y1 = math.sin(self.angle) * i + j + self.y
-				if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
+				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
+				# 	return i
+				if int(x1) not in range(0,self.size[1]) or int(y1) not in range(0,self.size[0]):
+					return i
+				elif self.pic[int(x1)][int(y1)] == BARRIER:
 					return i
 		else:
 			return 80
@@ -68,7 +73,10 @@ class enviro:
 				x1 = math.cos(self.angle + Deflaction) * i + self.x
 				''' the after translated point '''
 				y1 = math.sin(self.angle + Deflaction) * i + j + self.y
-				if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
+				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
+				if int(x1) not in range(0,self.size[1]) or int(y1) not in range(0,self.size[0]):
+					return i
+				elif self.pic[int(x1)][int(y1)] == BARRIER:
 					return i
 		else:
 			return 80
@@ -78,7 +86,11 @@ class enviro:
 				x1 = math.cos(self.angle - Deflaction) * i + self.x
 				''' the after translated point '''
 				y1 = math.sin(self.angle - Deflaction) * i + j + self.y
-				if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
+				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
+				# 	return i
+				if int(x1) not in range(0,self.size[1]) or int(y1) not in range(0,self.size[0]):
+					return i
+				elif self.pic[int(x1)][int(y1)] == BARRIER:
 					return i
 		else:
 			return 80
@@ -119,7 +131,7 @@ class enviro:
 			self.y -= slowStep * math.sin(self.angle)
 
 	def fuzzy(self):
-		stretch = [Radius+15,Radius+40]
+		stretch = [Radius+15,Radius+30,Radius+50]
 		ret = []
 		a = [self.left(),self.front(),self.right()]
 		for i in range(3):
@@ -129,18 +141,19 @@ class enviro:
 				ret.append(NEAR) 
 			elif a[i] < stretch[1]:
 				ret.append(MID) 
+			elif a[i] < stretch[2]:
+				ret.append(MIDFAR)
 			else:
 				ret.append(FAR)
 		return ret 
 
 	def strategy(self):
 		l = [
-			[[BUMP,NEAR|MID|FAR|BUMP,NEAR|MID|FAR|BUMP],[SLOW,BACK]],
-			[[NEAR|MID|FAR,BUMP,NEAR|MID|FAR|BUMP],     [SLOW,BACK]],
-			# [[NEAR|MID|FAR,NEAR|MID|FAR,BUMP],          [BACK,SLOW]],
-			[[FAR, NEAR|MID|FAR,NEAR|MID|FAR],          [STOP,SLOW]],
-			# [[NEAR|MID, FAR, NEAR|MID|FAR]   ,          [SLOW,SLOW]],
-			# [[NEAR|MID,NEAR|MID,NEAR|MID|FAR],          [SLOW,STOP]]
+			[[FAR,0xffffff,0xffffff],[STOP,SLOW]],
+			[[0xffffff,MID|NEAR|BUMP|MIDFAR,0xffffff],[SLOW,STOP]],
+			[[MID,0xffffff,0xffffff],[SLOW,SLOW]],
+			[[MIDFAR,0xffffff,0xffffff],[SLOW,FAST]],
+			[[NEAR,0xffffff,0xffffff],[FAST,SLOW]]
 		]
 		a = self.fuzzy()
 		for i in l:
@@ -152,68 +165,11 @@ class enviro:
 				break 
 		else:
 			(self.wheel0,self.wheel1) = (SLOW,SLOW)
-		# if a ==   [NEAR, FAR, FAR]:
-		# 	(self.wheel0, self.wheel1) = (FAST,SLOW)
-		# 	print "turn right"
-		# elif a == [MID,  FAR, FAR]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,FAST)
-		# 	print "turn left"
-		# elif a == [FAR,  FAR, FAR]:
-		# 	# (self.wheel0, self.wheel1) = (SLOW,SLOW)
-		# 	# print "forward"
-		# 	''' little change here '''
-		# 	(self.wheel0 ,self.wheel1) = (STOP, SLOW)
 
-		# elif a == [NEAR, MID, FAR]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,STOP)
-		# 	print "turn right"
-		# elif a == [MID,  MID, FAR]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,STOP)
-		# 	print "turn right"
-		# elif a == [FAR,  MID, FAR]:
-		# 	(self.wheel0, self.wheel1) = (STOP,SLOW)
-		# 	print "turn left"
+	def isOut(self,x1,y1):
+		if x1>0 and y1>0 and x1<self.size[0] and y1<self.size[1] and self.pic[int(x1)][int(y1)] != BARRIER:
+			return True
 
-		# elif a == [FAR,  FAR, NEAR]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,FAST)
-		# 	print "turn left"
-		# elif a == [FAR,  FAR, MID]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,SLOW)
-		# 	print "forward"
-		# elif a == [FAR,  MID, NEAR]:
-		# 	(self.wheel0, self.wheel1) = (STOP,SLOW)
-		# 	print "turn left"
-		# elif a == [FAR,  MID, MID]:
-		# 	(self.wheel0, self.wheel1) = (STOP,SLOW)
-		# 	print "turn left"
-
-		# elif a == [NEAR,  FAR, MID]:
-		# 	(self.wheel0, self.wheel1) = (FAST,SLOW)
-		# 	print "turn right"
-		# elif a == [MID,  FAR, NEAR]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,FAST)
-		# 	print "turn left"
-		# elif a == [MID,  FAR, MID]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,FAST)
-		# 	print "turn left"
-		# elif a == [NEAR,  FAR, NEAR]:
-		# 	(self.wheel0, self.wheel1) = (STOP,STOP)
-		# 	print "stop"
-
-		# elif a == [MID, MID, MID]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,STOP)
-		# 	print "turn right"
-		# elif a == [NEAR,  MID, MID]:
-		# 	(self.wheel0, self.wheel1) = (SLOW,STOP)
-		# 	print "turn right"
-		# elif a == [MID,  MID, NEAR]:
-		# 	(self.wheel0, self.wheel1) = (STOP,SLOW)
-		# 	print "turn left"	
-
-
-		# else:
-		# 	(self.wheel0, self.wheel1) = (STOP,STOP)
-		# 	print "stop"
 	def show(self):
 		img = Image.new('RGB',self.size,'white')
 		ld = img.load()
@@ -238,7 +194,7 @@ class enviro:
 				x1 = math.cos(self.angle) * i + self.x
 				''' the after translated point '''
 				y1 = math.sin(self.angle) * i + j + self.y
-				if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] != BARRIER:
+				if self.isOut(x1,y1):
 					ld[int(y1),int(x1)] = (255,0,0)
 				else:
 					break
@@ -249,7 +205,7 @@ class enviro:
 				x1 = math.cos(self.angle + Deflaction) * i + self.x
 				''' the after translated point '''
 				y1 = math.sin(self.angle + Deflaction) * i + j + self.y
-				if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] != BARRIER:
+				if self.isOut(x1,y1):
 					ld[int(y1),int(x1)] = (225,0,0)
 				else:
 					break
@@ -259,7 +215,7 @@ class enviro:
 				x1 = math.cos(self.angle - Deflaction) * i + self.x
 				''' the after translated point '''
 				y1 = math.sin(self.angle - Deflaction) * i + j + self.y
-				if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] != BARRIER:
+				if self.isOut(x1,y1):
 					ld[int(y1),int(x1)] = (200,0,0)
 				else:
 					break
@@ -268,11 +224,11 @@ class enviro:
 		img.save('look.jpg',"JPEG")
 
 if __name__ == '__main__':
-	a = enviro('1.png',50,50)
+	a = enviro('1.png',50,1500)
 	c = 10
 	while True:
 		a.strategy()
 		print "left,front,right:  ", a.left(),a.front(),a.right()
 		a.run()
-		[a.show(),time.sleep(1.5)] if c%10==1 else 0
+		[a.show(),time.sleep(1)] if c%50==1 else 0
 		c += 1
