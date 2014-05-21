@@ -120,7 +120,7 @@ class enviro:
 			self.y -= slowStep * math.sin(self.angle)
 
 	def fuzzy(self):
-		stretch = [Radius+12,Radius+15,Radius+24]
+		stretch = [Radius+25,Radius+29,Radius+35]
 		ret = []
 		a = [self.left(),self.front(),self.right()]
 		for i in range(3):
@@ -139,7 +139,7 @@ class enviro:
 	def strategy(self):
 		l = [
 			[[FAR,0xffffff,0xffffff],[STOP,SLOW]],
-			[[0xffffff,MID|NEAR|BUMP|MIDFAR,0xffffff],[SLOW,STOP]],
+			[[0xffffff,MID|NEAR|BUMP|MIDFAR,0xffffff],[SLOW,BACK]],
 			[[MID,0xffffff,0xffffff],[SLOW,SLOW]],
 			[[MIDFAR,0xffffff,0xffffff],[SLOW,FAST]],
 			[[NEAR|BUMP,0xffffff,0xffffff],[FAST,SLOW]]
@@ -179,7 +179,7 @@ if __name__ == '__main__':
 		# print "left,front,right:  ", a.left(),a.front(),a.right()
 		a.run()
 		a.store()
-		if c % 400 == 0:
+		if c % 1000 == 0:
 			a.show()
 			time.sleep(2)
 		c += 1
