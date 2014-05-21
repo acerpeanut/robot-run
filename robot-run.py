@@ -211,7 +211,10 @@ class enviro:
 		ld = self.img.load()
 		for i in range(-(Radius-5),Radius-5):
 			for j in range(-(Radius-5),Radius-5):
-				ld[int(self.y+i),int(self.x+j)] = (0,100,200)
+				if (self.y+i)<0 or self.x+j<0 or self.y+i>=self.size[0] or self.x+j>=self.size[1]:
+					print "overslap, %f, %f" %(self.y+i,self.x+j)
+				elif i*i+j*j<=(Radius-5)*(Radius-5):
+					ld[int(self.y+i),int(self.x+j)] = (0,100,200)
 		# p += "ax[%d]=%d\nay[%d]=%d\n" % (AryCount,int(self.y),AryCount,int(self.x))
 		htmFile.write(",%d,%d" % (int(self.y),int(self.x)))
 		AryCount += 1
