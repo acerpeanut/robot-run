@@ -22,12 +22,52 @@ Radius = 15
 StepAng = 0.1
 Deflaction = math.pi/3
 
+htmFile = file("/home/peanut/Public/a.html","w")
+
+head='''
+<html>
+<body onload="drwMG()">
+<img id="mg" src="migong3.png" style="display:none" />
+<canvas id="a" width="690" height="690">
+</canvas>
+<script>
+var c=document.getElementById("a")
+var cxt=c.getContext("2d")
+function drwMG(){
+var img=document.getElementById("mg")
+cxt.drawImage(img,0,0)	
+}
+cxt.fillStyle="#FF0000"
+var count=1
+var timeID=0
+var ax=new Array(0
+'''
+
+AryCount=0
+p=''
+foot=''')
+function dr(){
+	cxt.fillRect(ax[count],ax[count+1],10,10)
+	count=count+2
+	if(count>=ax.length){
+		window.clearInterval(timeID)
+	}
+}
+timeID=window.setInterval("dr()",20)
+</script>
+</body>
+</html>
+'''
+htmFile.write(head)
+
+
 class enviro:
 	def __init__(self,pngFile,x=100,y=100,angle=0):
 		a = Image.open(pngFile)
 		ld = a.load()
 		self.size = a.size
 		self.closeCount = 0
+		self.finished = 0
 
 		(w,h) = self.size
 
@@ -58,6 +98,7 @@ class enviro:
 			x1 = math.cos(self.angle) * i + self.x
 			y1 = math.sin(self.angle) * i + self.y
 			if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
+				self.finished = 1
 				return i
 			elif self.pic[int(x1)][int(y1)] == BARRIER:
 				return i
@@ -163,10 +204,14 @@ class enviro:
 
 	def store(self):
 		# global img
+		global p,AryCount,htmFile
 		ld = self.img.load()
 		for i in range(-(Radius-5),Radius-5):
 			for j in range(-(Radius-5),Radius-5):
 				ld[int(self.y+i),int(self.x+j)] = (0,100,200)
+		# p += "ax[%d]=%d\nay[%d]=%d\n" % (AryCount,int(self.y),AryCount,int(self.x))
+		htmFile.write(",%d,%d" % (int(self.y),int(self.x)))
+		AryCount += 1
 
 	def show(self):
 		self.img.save('look.jpg',"JPEG")
@@ -179,7 +224,12 @@ if __name__ == '__main__':
 		# print "left,front,right:  ", a.left(),a.front(),a.right()
 		a.run()
 		a.store()
-		if c % 1000 == 0:
+		if a.finished:
 			a.show()
-			time.sleep(2)
-		c += 1
+			break
+		#	time.sleep(2)
+
+#htmFile.write(head)
+#htmFile.write(p)
+htmFile.write(foot)
+htmFile.close()
