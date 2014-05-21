@@ -22,8 +22,6 @@ Radius = 15
 StepAng = 0.1
 Deflaction = math.pi/3
 
-htmFile = file("a.html","w")
-
 head='''
 <html>
 <body onload="drwMG()">
@@ -43,8 +41,6 @@ var timeID=0
 var ax=new Array(0
 '''
 
-AryCount=0
-p=''
 foot=''')
 function dr(){
 	cxt.fillRect(ax[count],ax[count+1],10,10)
@@ -58,16 +54,18 @@ timeID=window.setInterval("dr()",20)
 </body>
 </html>
 '''
-htmFile.write(head)
 
 
 class enviro:
 	def __init__(self,pngFile,x=100,y=100,angle=0):
+		global head
 		a = Image.open(pngFile)
 		ld = a.load()
 		self.size = a.size
 		self.closeCount = 0
 		self.finished = 0
+		self.htmFile = file("a.html","w")
+		self.htmFile.write(head)
 
 		(w,h) = self.size
 
@@ -206,8 +204,7 @@ class enviro:
 			return True
 
 	def store(self):
-		# global img
-		global p,AryCount,htmFile
+		global foot
 		ld = self.img.load()
 		for i in range(-(Radius-5),Radius-5):
 			for j in range(-(Radius-5),Radius-5):
@@ -215,12 +212,13 @@ class enviro:
 					print "overslap, %f, %f" %(self.y+i,self.x+j)
 				elif i*i+j*j<=(Radius-5)*(Radius-5):
 					ld[int(self.y+i),int(self.x+j)] = (0,100,200)
-		# p += "ax[%d]=%d\nay[%d]=%d\n" % (AryCount,int(self.y),AryCount,int(self.x))
-		htmFile.write(",%d,%d" % (int(self.y),int(self.x)))
-		AryCount += 1
+
+		self.htmFile.write(",%d,%d" % (int(self.y),int(self.x)))
 
 	def show(self):
 		self.img.save('look.jpg',"JPEG")
+		self.htmFile.write(foot)
+		self.htmFile.close()
 
 if __name__ == '__main__':
 	a = enviro('migong3.png',20,677)
@@ -235,7 +233,3 @@ if __name__ == '__main__':
 			break
 		#	time.sleep(2)
 
-#htmFile.write(head)
-#htmFile.write(p)
-htmFile.write(foot)
-htmFile.close()
