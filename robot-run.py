@@ -22,18 +22,22 @@ Radius = 15
 StepAng = 0.1
 Deflaction = math.pi/3
 
-head='''
+head1='''
 <html>
 <body onload="drwMG()">
-<img id="mg" src="migong3.png" style="display:none" />
-<canvas id="a" width="690" height="690">
+<img id="mg" src="'''
+head2='''" style="display:none" />
+<canvas id="a">
 </canvas>
 <script>
 var c=document.getElementById("a")
 var cxt=c.getContext("2d")
 function drwMG(){
 var img=document.getElementById("mg")
+c.width = img.width
+c.height = img.height
 cxt.drawImage(img,0,0)	
+cxt.fillStyle="#FF0000"
 }
 cxt.fillStyle="#FF0000"
 var count=1
@@ -58,14 +62,15 @@ timeID=window.setInterval("dr()",20)
 
 class enviro:
 	def __init__(self,pngFile,x=100,y=100,angle=0):
-		global head
+		global head1,head2
 		a = Image.open(pngFile)
 		ld = a.load()
 		self.size = a.size
 		self.closeCount = 0
 		self.finished = 0
-		self.htmFile = file("a.html","w")
-		self.htmFile.write(head)
+		self.htmFile=file("%s.html"%pngFile,"w")
+		self.htmFile.write("%s%s%s"%(head1,pngFile,head2))
+		self.saveJPG = pngFile+".jpg"
 
 		(w,h) = self.size
 
@@ -216,20 +221,24 @@ class enviro:
 		self.htmFile.write(",%d,%d" % (int(self.y),int(self.x)))
 
 	def show(self):
-		self.img.save('look.jpg',"JPEG")
+		self.img.save(self.saveJPG,"JPEG")
 		self.htmFile.write(foot)
 		self.htmFile.close()
 
 if __name__ == '__main__':
 	a = enviro('migong3.png',20,677)
-	c = 10
-	while True:
+	b = enviro('migong2.png',20,565)
+	while not a.finished:
 		a.strategy()
-		# print "left,front,right:  ", a.left(),a.front(),a.right()
 		a.run()
 		a.store()
-		if a.finished:
-			a.show()
-			break
-		#	time.sleep(2)
+	else:
+		a.show()
+		
+	while not b.finished:
+		b.strategy()
+		b.run()
+		b.store()
+	else:
+		b.show()
 
