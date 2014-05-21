@@ -30,6 +30,14 @@ class enviro:
 		self.closeCount = 0
 
 		(w,h) = self.size
+
+		self.img = Image.new('RGB',self.size,'white')
+		ld2 = self.img.load()
+
+		for i in range(w):
+			for j in range(h):
+				ld2[i,j] = ld[i,j]
+
 		''' initial environment for robot '''
 		self.pic = [[BARRIER if ld[i,j][0]<10 else PASSAGE for i in range(w)] \
 			for j in range(h)]
@@ -61,7 +69,7 @@ class enviro:
 				y1 = math.sin(self.angle) * i + j + self.y
 				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
 				# 	return i
-				if int(x1) not in range(0,self.size[1]) or int(y1) not in range(0,self.size[0]):
+				if x1<0 or y1<0 or x1>self.size[1] or y1>self.size[0]:
 					return i
 				elif self.pic[int(x1)][int(y1)] == BARRIER:
 					return i
@@ -74,7 +82,7 @@ class enviro:
 				''' the after translated point '''
 				y1 = math.sin(self.angle + Deflaction) * i + j + self.y
 				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
-				if int(x1) not in range(0,self.size[1]) or int(y1) not in range(0,self.size[0]):
+				if x1<0 or y1<0 or x1>self.size[1] or y1>self.size[0]:
 					return i
 				elif self.pic[int(x1)][int(y1)] == BARRIER:
 					return i
@@ -88,7 +96,7 @@ class enviro:
 				y1 = math.sin(self.angle - Deflaction) * i + j + self.y
 				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
 				# 	return i
-				if int(x1) not in range(0,self.size[1]) or int(y1) not in range(0,self.size[0]):
+				if x1<0 or y1<0 or x1>self.size[1] or y1>self.size[0]:
 					return i
 				elif self.pic[int(x1)][int(y1)] == BARRIER:
 					return i
@@ -170,65 +178,76 @@ class enviro:
 		if x1>0 and y1>0 and x1<self.size[0] and y1<self.size[1] and self.pic[int(x1)][int(y1)] != BARRIER:
 			return True
 
+	def store(self):
+		# global img
+		ld = self.img.load()
+		for i in range(-(Radius-5),Radius-5):
+			for j in range(-(Radius-5),Radius-5):
+				ld[int(self.y+i),int(self.x+j)] = (0,100,200)
+
 	def show(self):
-		img = Image.new('RGB',self.size,'white')
-		ld = img.load()
-		count = 0
+		# img = Image.new('RGB',self.size,'white')
+		# ld = img.load()
+		# count = 0
 
-		for i in range(self.size[0]):
-			for j in range(self.size[1]):
-				if self.pic[j][i] == BARRIER:
-					ld[i,j] = (0,255,100)
-			# 	else:
-			# 		count += 1
-			# print self.pic[i]
-		''' the robot marks blue '''
-		for i in range(int(self.x)-Radius,int(self.x)+Radius):
-			for j in range(int(self.y)-Radius,int(self.y)+Radius):
-				if j>=0 and i>=0 and j<=self.size[0] and i<self.size[0]:
-					ld[j,i] = (0,150,255)
+		# for i in range(self.size[0]):
+		# 	for j in range(self.size[1]):
+		# 		if self.pic[j][i] == BARRIER:
+		# 			ld[i,j] = (0,255,100)
+		# 	# 	else:
+		# 	# 		count += 1
+		# 	# print self.pic[i]
+		# ''' the robot marks blue '''
+		# for i in range(int(self.x)-Radius,int(self.x)+Radius):
+		# 	for j in range(int(self.y)-Radius,int(self.y)+Radius):
+		# 		if j>=0 and i>=0 and j<=self.size[0] and i<self.size[0]:
+		# 			ld[j,i] = (0,150,255)
 
-		''' front scan marks pure red '''
-		for i in range(80):
-			for j in range(-Radius,Radius):
-				x1 = math.cos(self.angle) * i + self.x
-				''' the after translated point '''
-				y1 = math.sin(self.angle) * i + j + self.y
-				if self.isOut(x1,y1):
-					ld[int(y1),int(x1)] = (255,0,0)
-				else:
-					break
+		# ''' front scan marks pure red '''
+		# for i in range(80):
+		# 	for j in range(-Radius,Radius):
+		# 		x1 = math.cos(self.angle) * i + self.x
+		# 		''' the after translated point '''
+		# 		y1 = math.sin(self.angle) * i + j + self.y
+		# 		if self.isOut(x1,y1):
+		# 			ld[int(y1),int(x1)] = (255,0,0)
+		# 		else:
+		# 			break
 
-		''' left scan marks nearly red '''
-		for i in range(80):
-			for j in range(-Radius,Radius):
-				x1 = math.cos(self.angle + Deflaction) * i + self.x
-				''' the after translated point '''
-				y1 = math.sin(self.angle + Deflaction) * i + j + self.y
-				if self.isOut(x1,y1):
-					ld[int(y1),int(x1)] = (225,0,0)
-				else:
-					break
-		''' right scan marks little red '''
-		for i in range(80):
-			for j in range(-Radius,Radius):
-				x1 = math.cos(self.angle - Deflaction) * i + self.x
-				''' the after translated point '''
-				y1 = math.sin(self.angle - Deflaction) * i + j + self.y
-				if self.isOut(x1,y1):
-					ld[int(y1),int(x1)] = (200,0,0)
-				else:
-					break
+		# ''' left scan marks nearly red '''
+		# for i in range(80):
+		# 	for j in range(-Radius,Radius):
+		# 		x1 = math.cos(self.angle + Deflaction) * i + self.x
+		# 		''' the after translated point '''
+		# 		y1 = math.sin(self.angle + Deflaction) * i + j + self.y
+		# 		if self.isOut(x1,y1):
+		# 			ld[int(y1),int(x1)] = (225,0,0)
+		# 		else:
+		# 			break
+		# ''' right scan marks little red '''
+		# for i in range(80):
+		# 	for j in range(-Radius,Radius):
+		# 		x1 = math.cos(self.angle - Deflaction) * i + self.x
+		# 		''' the after translated point '''
+		# 		y1 = math.sin(self.angle - Deflaction) * i + j + self.y
+		# 		if self.isOut(x1,y1):
+		# 			ld[int(y1),int(x1)] = (200,0,0)
+		# 		else:
+		# 			break
 
 		# print 'len: %d' % len(self.pic)
-		img.save('look.jpg',"JPEG")
+		# global img
+		self.img.save('look.jpg',"JPEG")
 
 if __name__ == '__main__':
-	a = enviro('1.png',50,1500)
+	a = enviro('1.png',20,1160)
 	c = 10
 	while True:
 		a.strategy()
-		print "left,front,right:  ", a.left(),a.front(),a.right()
+		# print "left,front,right:  ", a.left(),a.front(),a.right()
 		a.run()
-		[a.show(),time.sleep(1)] if c%50==1 else 0
+		a.store()
+		if c % 10 == 0:
+			a.show()
+			# time.sleep(2)
 		c += 1
