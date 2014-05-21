@@ -128,7 +128,7 @@ class enviro:
 			self.y -= slowStep * math.sin(self.angle)
 
 	def fuzzy(self):
-		stretch = [Radius+15,Radius+30,Radius+50]
+		stretch = [Radius+14,Radius+22,Radius+39]
 		ret = []
 		a = [self.left(),self.front(),self.right()]
 		for i in range(3):
@@ -147,10 +147,10 @@ class enviro:
 	def strategy(self):
 		l = [
 			[[FAR,0xffffff,0xffffff],[STOP,SLOW]],
-			[[0xffffff,MID|NEAR|BUMP|MIDFAR,0xffffff],[SLOW,STOP]],
+			[[0xffffff,MID|NEAR|BUMP,0xffffff],[SLOW,STOP]],
 			[[MID,0xffffff,0xffffff],[SLOW,SLOW]],
 			[[MIDFAR,0xffffff,0xffffff],[SLOW,FAST]],
-			[[NEAR,0xffffff,0xffffff],[FAST,SLOW]]
+			[[NEAR|BUMP,0xffffff,0xffffff],[FAST,SLOW]]
 		]
 		a = self.fuzzy()
 		for i in l:
@@ -161,6 +161,8 @@ class enviro:
 				(self.wheel0,self.wheel1) = i[1]
 				break 
 		else:
+			print "some thing wrong!!!!!!"
+			print a
 			(self.wheel0,self.wheel1) = (SLOW,SLOW)
 
 	def isOut(self,x1,y1):
