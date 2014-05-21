@@ -106,12 +106,15 @@ class enviro:
 			return 80
 	def left(self):
 		for i in range(80):
-			x1 = math.cos(self.angle + Deflaction) * i + self.x
-			y1 = math.sin(self.angle + Deflaction) * i + self.y
-			if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
-				return i
-			elif self.pic[int(x1)][int(y1)] == BARRIER:
-				return i
+			for j in range(-(Radius-5),Radius-5):
+				x1 = math.cos(self.angle + Deflaction) * i + self.x + \
+				math.cos(self.angle + Deflaction + math.pi/2) * j
+				y1 = math.sin(self.angle + Deflaction) * i + self.y + \
+				math.sin(self.angle + Deflaction + math.pi/2) * j
+				if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
+					return i
+				elif self.pic[int(x1)][int(y1)] == BARRIER:
+					return i
 		else:
 			return 80
 	def right(self):
@@ -161,7 +164,7 @@ class enviro:
 			self.y -= slowStep * math.sin(self.angle)
 
 	def fuzzy(self):
-		stretch = [Radius+25,Radius+29,Radius+35]
+		stretch = [Radius+16,Radius+18,Radius+25]
 		ret = []
 		a = [self.left(),self.front(),self.right()]
 		for i in range(3):
