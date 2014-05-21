@@ -52,43 +52,35 @@ class enviro:
 
 	
 	''' effective distance is smaller than 80 '''
+
 	def front(self):
 		for i in range(80):
-			for j in range(-Radius,Radius):
-				x1 = math.cos(self.angle) * i + self.x
-				''' the after translated point '''
-				y1 = math.sin(self.angle) * i + j + self.y
-				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
-				if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
-					return i
-				elif self.pic[int(x1)][int(y1)] == BARRIER:
-					return i
+			x1 = math.cos(self.angle) * i + self.x
+			y1 = math.sin(self.angle) * i + self.y
+			if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
+				return i
+			elif self.pic[int(x1)][int(y1)] == BARRIER:
+				return i
 		else:
 			return 80
 	def left(self):
 		for i in range(80):
-			for j in range(-Radius,Radius):
-				x1 = math.cos(self.angle + Deflaction) * i + self.x
-				''' the after translated point '''
-				y1 = math.sin(self.angle + Deflaction) * i + j + self.y
-				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
-				if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
-					return i
-				elif self.pic[int(x1)][int(y1)] == BARRIER:
-					return i
+			x1 = math.cos(self.angle + Deflaction) * i + self.x
+			y1 = math.sin(self.angle + Deflaction) * i + self.y
+			if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
+				return i
+			elif self.pic[int(x1)][int(y1)] == BARRIER:
+				return i
 		else:
 			return 80
 	def right(self):
 		for i in range(80):
-			for j in range(-Radius,Radius):
-				x1 = math.cos(self.angle - Deflaction) * i + self.x
-				''' the after translated point '''
-				y1 = math.sin(self.angle - Deflaction) * i + j + self.y
-				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
-				if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
-					return i
-				elif self.pic[int(x1)][int(y1)] == BARRIER:
-					return i
+			x1 = math.cos(self.angle - Deflaction) * i + self.x
+			y1 = math.sin(self.angle - Deflaction) * i  + self.y
+			if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
+				return i
+			elif self.pic[int(x1)][int(y1)] == BARRIER:
+				return i
 		else:
 			return 80
 
@@ -128,7 +120,7 @@ class enviro:
 			self.y -= slowStep * math.sin(self.angle)
 
 	def fuzzy(self):
-		stretch = [Radius+14,Radius+22,Radius+39]
+		stretch = [Radius+12,Radius+15,Radius+24]
 		ret = []
 		a = [self.left(),self.front(),self.right()]
 		for i in range(3):
@@ -147,7 +139,7 @@ class enviro:
 	def strategy(self):
 		l = [
 			[[FAR,0xffffff,0xffffff],[STOP,SLOW]],
-			[[0xffffff,MID|NEAR|BUMP,0xffffff],[SLOW,STOP]],
+			[[0xffffff,MID|NEAR|BUMP|MIDFAR,0xffffff],[SLOW,STOP]],
 			[[MID,0xffffff,0xffffff],[SLOW,SLOW]],
 			[[MIDFAR,0xffffff,0xffffff],[SLOW,FAST]],
 			[[NEAR|BUMP,0xffffff,0xffffff],[FAST,SLOW]]
@@ -187,7 +179,7 @@ if __name__ == '__main__':
 		# print "left,front,right:  ", a.left(),a.front(),a.right()
 		a.run()
 		a.store()
-		if c % 500 == 0:
+		if c % 400 == 0:
 			a.show()
-			# time.sleep(2)
+			time.sleep(2)
 		c += 1
