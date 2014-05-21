@@ -22,7 +22,7 @@ Radius = 15
 StepAng = 0.1
 Deflaction = math.pi/3
 
-htmFile = file("/home/peanut/Public/a.html","w")
+htmFile = file("a.html","w")
 
 head='''
 <html>
