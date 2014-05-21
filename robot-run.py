@@ -85,7 +85,6 @@ class enviro:
 				''' the after translated point '''
 				y1 = math.sin(self.angle - Deflaction) * i + j + self.y
 				# if x1>0 and y1>0 and self.pic[int(x1)][int(y1)] == BARRIER:
-				# 	return i
 				if x1<0 or y1<0 or x1>=self.size[1] or y1>=self.size[0]:
 					return i
 				elif self.pic[int(x1)][int(y1)] == BARRIER:
